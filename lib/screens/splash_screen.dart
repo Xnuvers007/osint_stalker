@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../home_screen.dart';
 import 'auth_screen.dart';
+import '../utils/quotes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,10 +17,14 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _progressController;
+  late QuoteModel _randomQuote;
 
   @override
   void initState() {
     super.initState();
+
+    // Get random quote
+    _randomQuote = OsintQuotes.getRandomQuote();
 
     _pulseController = AnimationController(
       vsync: this,
@@ -28,11 +33,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 6000),
     )..forward();
 
     // Navigate to auth screen after loading
-    Future.delayed(const Duration(milliseconds: 3000), () {
+    // Future.delayed(const Duration(milliseconds: 3000), () {
+    Future.delayed(const Duration(milliseconds: 6500), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -222,7 +228,53 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ).animate().fadeIn(delay: 900.ms, duration: 500.ms),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
+
+            // Random quote
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF151B2E).withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF00FF94).withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.format_quote,
+                    color: Color(0xFF00FF94),
+                    size: 24,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _randomQuote.quote,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      height: 1.5,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '— ${_randomQuote.author}',
+                    style: const TextStyle(
+                      color: Color(0xFF00FF94),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(delay: 1100.ms, duration: 800.ms).slideY(begin: 0.2, end: 0),
+
+            const SizedBox(height: 40),
 
             // Developer social media links
             Row(

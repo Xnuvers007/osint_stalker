@@ -8,6 +8,7 @@ import 'screens/donate_screen.dart';
 import 'screens/dork_templates_screen.dart';
 import 'screens/auth_screen.dart';
 import 'utils/update_checker.dart';
+import 'utils/notification_service.dart';
 
 // Theme Colors
 const Color bgColor = Color(0xFF0A0E1A);
@@ -777,6 +778,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Navigator.pop(context);
               _showAppLockSettings();
             }),
+            _buildDrawerItem(Icons.notifications_outlined, 'Notification Settings', () {
+              Navigator.pop(context);
+              _showNotificationSettings();
+            }),
             const Divider(color: Colors.white10),
             _buildDrawerItem(Icons.info_outline, 'About', () {
               Navigator.pop(context);
@@ -1028,7 +1033,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const AuthScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => AuthScreen(
+                              mode: hasPin ? AuthMode.changePin : AuthMode.setupPin,
+                            ),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -1120,5 +1129,278 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       case OsintType.ip: return TextInputType.number;
       default: return TextInputType.text;
     }
+  }
+
+  void _showNotificationSettings() async {
+    final notificationService = NotificationService();
+    bool isPermissionGranted = await notificationService.isPermissionGranted();
+    bool notificationsEnabled = await NotificationSettingsManager.isNotificationEnabled();
+
+    if (!mounted) return;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: neonOrange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.notifications, color: neonOrange, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Notification Settings',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                
+                // Permission status
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: inputColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isPermissionGranted ? neonGreen.withOpacity(0.3) : neonRed.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isPermissionGranted ? Icons.check_circle : Icons.warning_rounded,
+                        color: isPermissionGranted ? neonGreen : neonRed,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isPermissionGranted ? 'Permission Granted' : 'Permission Required',
+                              style: TextStyle(
+                                color: isPermissionGranted ? neonGreen : neonRed,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              isPermissionGranted 
+                                  ? 'Notifikasi sudah diizinkan'
+                                  : 'Izinkan notifikasi untuk fitur lengkap',
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!isPermissionGranted)
+                        TextButton(
+                          onPressed: () async {
+                            final granted = await notificationService.requestPermission();
+                            setModalState(() {
+                              isPermissionGranted = granted;
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: neonOrange.withOpacity(0.2),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                          child: const Text('Izinkan', style: TextStyle(color: neonOrange)),
+                        ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Enable notifications toggle
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: inputColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active, color: Colors.white70),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Enable Notifications',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Terima notifikasi dari aplikasi',
+                              style: TextStyle(color: Colors.white54, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: notificationsEnabled && isPermissionGranted,
+                        onChanged: isPermissionGranted ? (value) async {
+                          await NotificationSettingsManager.setNotificationEnabled(value);
+                          setModalState(() {
+                            notificationsEnabled = value;
+                          });
+                        } : null,
+                        activeColor: neonGreen,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Quick notification actions
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Quick Actions',
+                    style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildQuickNotificationButton(
+                        'Test Notification',
+                        Icons.notifications_none,
+                        neonGreen,
+                        isPermissionGranted && notificationsEnabled
+                            ? () async {
+                                await notificationService.showNotification(
+                                  title: '🔔 Test Notification',
+                                  body: 'Notifikasi berfungsi dengan baik!',
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildQuickNotificationButton(
+                        'Tips',
+                        Icons.lightbulb_outline,
+                        neonBlue,
+                        isPermissionGranted && notificationsEnabled
+                            ? () async {
+                                await notificationService.showTipsNotification();
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildQuickNotificationButton(
+                        'Security Reminder',
+                        Icons.security,
+                        neonPurple,
+                        isPermissionGranted && notificationsEnabled
+                            ? () async {
+                                await notificationService.showSecurityReminder();
+                              }
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildQuickNotificationButton(
+                        'Clear All',
+                        Icons.clear_all,
+                        neonRed,
+                        isPermissionGranted
+                            ? () async {
+                                await notificationService.cancelAllNotifications();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Semua notifikasi dihapus'),
+                                      backgroundColor: cardColor,
+                                    ),
+                                  );
+                                }
+                              }
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildQuickNotificationButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback? onPressed,
+  ) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: onPressed != null ? color.withOpacity(0.15) : Colors.grey.withOpacity(0.1),
+        foregroundColor: onPressed != null ? color : Colors.grey,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 0,
+      ),
+      icon: Icon(icon, size: 18),
+      label: Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
 }
