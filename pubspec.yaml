@@ -2,7 +2,7 @@ name: "Osint_Stalker"
 description: "A new Flutter project for osint stalker and looking leaked datas"
 publish_to: 'none'
 
-version: "3.0"
+version: 3.0.0+1
 
 environment:
   sdk: ^3.5.4
