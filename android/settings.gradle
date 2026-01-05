@@ -1,9 +1,34 @@
 pluginManagement {
     def flutterSdkPath = {
         def properties = new Properties()
-        file("local.properties").withInputStream { properties.load(it) }
+        def propertiesFile = new File("local.properties")
+        if (propertiesFile.exists()) {
+            propertiesFile.withInputStream { properties.load(it) }
+        }
         def flutterSdkPath = properties.getProperty("flutter.sdk")
-        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+
+        if (flutterSdkPath == null) {
+            flutterSdkPath = System.getenv("FLUTTER_ROOT")
+        }
+        if (flutterSdkPath == null) {
+            flutterSdkPath = System.getenv("FLUTTER_SDK")
+        }
+
+        if (flutterSdkPath == null) {
+            def envPath = System.getenv("PATH") ?: System.getenv("Path")
+            if (envPath != null) {
+                String[] paths = envPath.split(System.getProperty("path.separator"))
+                for (String path : paths) {
+                    if (path.toLowerCase().contains("flutter") && path.toLowerCase().endsWith("bin")) {
+                        def binFile = new File(path)
+                        flutterSdkPath = binFile.getParent()
+                        break
+                    }
+                }
+            }
+        }
+
+        assert flutterSdkPath != null, "Gagal menemukan Flutter SDK! Pastikan ada di local.properties, FLUTTER_ROOT, atau System Path."
         return flutterSdkPath
     }()
 

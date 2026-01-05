@@ -45,3 +45,6 @@ app.*.map.json
 *.jks
 *.keystore
 release-key.jks
+
+.vscode
+.vscode/*
