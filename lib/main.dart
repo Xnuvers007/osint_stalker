@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        textTheme: GoogleFonts.jetbrainsMonoTextTheme(), // Font coding style
         useMaterial3: true,
+        fontFamily: GoogleFonts.jetbrainsMono().fontFamily, 
       ),
       home: const HomeScreen(),
     );
