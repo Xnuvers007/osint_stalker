@@ -1,10 +1,14 @@
-name: Build Android APK
+name: Build Android APK & Release
 
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,14 +30,23 @@ jobs:
     - name: Get Dependencies
       run: flutter pub get
 
-    # 5. Build APK (Release mode)
-    # --split-per-abi dihapus agar jadi 1 file APK universal (fat apk)
-    # Jika ingin file lebih kecil tapi terpisah, tambahkan --split-per-abi
     - name: Build APK
       run: flutter build apk --no-tree-shake-icons --release --obfuscate --split-debug-info=build/debug_info
 
-    - name: Upload APK
+    - name: Rename APK with Version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/OsintStalker-${{ github.ref_name }}.apk
+
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: release-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: build/app/outputs/flutter-apk/*.apk
+
+    - name: Release to GitHub
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/app/outputs/flutter-apk/OsintStalker-${{ github.ref_name }}.apk
+        generate_release_notes: true
