@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'osint_logic.dart';
 import 'screens/donate_screen.dart';
 import 'screens/dork_templates_screen.dart';
+import 'utils/update_checker.dart';
 
 // Theme Colors
 const Color bgColor = Color(0xFF0A0E1A);
@@ -35,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Set<SearchEngine> _selectedEngines = {SearchEngine.google};
   String _filterCategory = 'All';
   
+  // Double back to exit
+  DateTime? _lastBackPressed;
+  
   late AnimationController _pulseController;
 
   @override
@@ -44,6 +48,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
+    
+    // Check for updates on app start
+    _checkForUpdates(showNoUpdateMessage: false);
+  }
+  
+  /// Check for updates from GitHub
+  Future<void> _checkForUpdates({bool showNoUpdateMessage = true}) async {
+    final updateInfo = await UpdateChecker.checkForUpdate(currentVersion: '3.0.0');
+    if (!mounted) return;
+    
+    if (updateInfo != null) {
+      UpdateChecker.showUpdateDialog(context, updateInfo);
+    } else if (showNoUpdateMessage) {
+      UpdateChecker.showNoUpdateSnackBar(context);
+    }
   }
 
   @override
@@ -193,19 +212,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: bgColor,
-      drawer: _buildDrawer(),
-      appBar: AppBar(
-        backgroundColor: cardColor,
-        elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
+        
+        final now = DateTime.now();
+        if (_lastBackPressed == null || 
+            now.difference(_lastBackPressed!) > const Duration(seconds: 2)) {
+          _lastBackPressed = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.exit_to_app, color: Colors.black, size: 18),
+                  SizedBox(width: 10),
+                  Text(
+                    'Tekan back sekali lagi untuk keluar aplikasi',
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              backgroundColor: neonOrange,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        } else {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: bgColor,
+        drawer: _buildDrawer(),
+        appBar: AppBar(
+          backgroundColor: cardColor,
+          elevation: 0,
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
           ),
-        ),
-        title: Row(
+          title: Row(
           children: [
             AnimatedBuilder(
               animation: _pulseController,
@@ -463,6 +513,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -715,6 +766,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             _buildDrawerItem(Icons.favorite_outline, 'Donate / Support', () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (_) => const DonateScreen()));
+            }),
+            _buildDrawerItem(Icons.system_update, 'Check Update', () {
+              Navigator.pop(context);
+              UpdateChecker.showCheckingSnackBar(context);
+              _checkForUpdates(showNoUpdateMessage: true);
             }),
             const Divider(color: Colors.white10),
             _buildDrawerItem(Icons.info_outline, 'About', () {

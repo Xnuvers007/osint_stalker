@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import '../utils/qris_converter.dart';
 
-// Theme Colors
 const Color bgColor = Color(0xFF0A0E1A);
 const Color cardColor = Color(0xFF151B2E);
 const Color inputColor = Color(0xFF1E2642);
@@ -546,11 +545,11 @@ class _DonateScreenState extends State<DonateScreen> with SingleTickerProviderSt
                   const SizedBox(height: 16),
                   _buildPaymentMethodTile(
                     icon: Icons.wallet,
-                    title: 'GoPay / OVO / DANA',
-                    subtitle: 'Transfer ke 085710815825',
+                    title: 'GoPay / DANA',
+                    subtitle: 'Transfer ke 0895324864082',
                     color: const Color(0xFF00AA13),
                     onTap: () {
-                      Clipboard.setData(const ClipboardData(text: '085710815825'));
+                      Clipboard.setData(const ClipboardData(text: '0895324864082'));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Nomor disalin ke clipboard!'),
@@ -572,10 +571,10 @@ class _DonateScreenState extends State<DonateScreen> with SingleTickerProviderSt
                   const SizedBox(height: 10),
                   _buildPaymentMethodTile(
                     icon: Icons.coffee,
-                    title: 'Buy Me a Coffee',
-                    subtitle: 'buymeacoffee.com/xnuvers007',
+                    title: 'Saweria / Buy Me a Coffee',
+                    subtitle: 'saweria.co/Xnuvers007',
                     color: const Color(0xFFFFDD00),
-                    onTap: () => _launchUrl('https://www.buymeacoffee.com/xnuvers007'),
+                    onTap: () => _launchUrl('https://saweria.co/Xnuvers007'),
                   ),
                 ],
               ),

@@ -13,7 +13,15 @@ enum SearchEngine {
   yahoo, 
   yandex,
   startpage,
-  searx
+  searx,
+  qwant,
+  wikipedia,
+  swisscows,
+  ask,
+  baidu,
+  dogpile,
+  aol,
+  mojeek
 }
 
 enum DorkOperator {
@@ -144,6 +152,54 @@ class OsintLogic {
       baseUrl: 'https://searx.be/search?q=',
       color: '#3498DB',
     ),
+    SearchEngine.qwant: SearchEngineInfo(
+      name: 'Qwant',
+      icon: '🔷',
+      baseUrl: 'https://www.qwant.com/?q=',
+      color: '#5C97FF',
+    ),
+    SearchEngine.wikipedia: SearchEngineInfo(
+      name: 'Wikipedia',
+      icon: '📚',
+      baseUrl: 'https://en.wikipedia.org/wiki/Special:Search?search=',
+      color: '#000000',
+    ),
+    SearchEngine.swisscows: SearchEngineInfo(
+      name: 'Swisscows',
+      icon: '🐄',
+      baseUrl: 'https://swisscows.com/web?query=',
+      color: '#FF0000',
+    ),
+    SearchEngine.ask: SearchEngineInfo(
+      name: 'Ask',
+      icon: '❓',
+      baseUrl: 'https://www.ask.com/web?q=',
+      color: '#D6001C',
+    ),
+    SearchEngine.baidu: SearchEngineInfo(
+      name: 'Baidu',
+      icon: '🔴',
+      baseUrl: 'https://www.baidu.com/s?wd=',
+      color: '#2319DC',
+    ),
+    SearchEngine.dogpile: SearchEngineInfo(
+      name: 'Dogpile',
+      icon: '🐕',
+      baseUrl: 'https://www.dogpile.com/serp?q=',
+      color: '#63B600',
+    ),
+    SearchEngine.aol: SearchEngineInfo(
+      name: 'AOL',
+      icon: '💠',
+      baseUrl: 'https://search.aol.com/aol/search?q=',
+      color: '#FF0B00',
+    ),
+    SearchEngine.mojeek: SearchEngineInfo(
+      name: 'Mojeek',
+      icon: '🌍',
+      baseUrl: 'https://www.mojeek.com/search?q=',
+      color: '#008060',
+    ),
   };
 
   // Common Dork Templates
@@ -162,8 +218,38 @@ class OsintLogic {
     ),
     DorkTemplate(
       name: 'Paste Sites',
-      template: 'site:pastebin.com | site:ghostbin.com | site:paste.ee | site:justpaste.it',
+      template: 'site:pastebin.com | site:ghostbin.com | site:paste.ee | site:justpaste.it | site:hastebin.com | site:dpaste.org | site:ideone.com | site:codepad.org | site:paste2.org | site:slexy.org | site:snipplr.com',
       description: 'Search paste/dump sites',
+      operators: [DorkOperator.site],
+    ),
+    DorkTemplate(
+      name: 'Scribd & Documents',
+      template: 'site:scribd.com | site:id.scribd.com | site:issuu.com | site:slideshare.net | site:academia.edu | site:researchgate.net | site:docdroid.net | site:calameo.com',
+      description: 'Search document sharing platforms',
+      operators: [DorkOperator.site],
+    ),
+    DorkTemplate(
+      name: 'Leak Database Sites',
+      template: 'site:raidforums.com | site:breached.to | site:leakbase.io | site:dehashed.com | site:snusbase.com | site:leakcheck.io | site:intelligence-x.com | site:pwndb2am4tzkvold.onion',
+      description: 'Search known leak/breach databases',
+      operators: [DorkOperator.site],
+    ),
+    DorkTemplate(
+      name: 'Archive & Cache',
+      template: 'site:archive.org | site:archive.is | site:webcache.googleusercontent.com | site:cached.com | site:cachedview.com | site:web.archive.org',
+      description: 'Search archived/cached content',
+      operators: [DorkOperator.site],
+    ),
+    DorkTemplate(
+      name: 'Cloud Storage Leaks',
+      template: 'site:drive.google.com | site:docs.google.com | site:dropbox.com | site:onedrive.live.com | site:1drv.ms | site:mega.nz | site:mediafire.com | site:zippyshare.com',
+      description: 'Search exposed cloud storage files',
+      operators: [DorkOperator.site],
+    ),
+    DorkTemplate(
+      name: 'Indonesian Leaks',
+      template: 'site:kaskus.co.id | site:brainly.co.id | site:kompasiana.com | site:id.quora.com | site:detik.com | site:tribunnews.com',
+      description: 'Search Indonesian forums & sites for leaks',
       operators: [DorkOperator.site],
     ),
     DorkTemplate(
@@ -354,10 +440,50 @@ class OsintLogic {
       targets.add(OsintTarget(
         title: "📋 Paste Sites",
         url: buildSearchUrl(SearchEngine.google, 
-          'site:pastebin.com | site:paste.ee | site:justpaste.it | site:ghostbin.com ($permutations)'),
+          'site:pastebin.com | site:paste.ee | site:justpaste.it | site:ghostbin.com | site:hastebin.com | site:dpaste.org ($permutations)'),
         description: "Cari di situs paste/dump",
         category: 'Leak',
         icon: '📋',
+      ));
+
+      // Scribd & Document Sharing
+      targets.add(OsintTarget(
+        title: "📚 Scribd & Docs",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:scribd.com | site:id.scribd.com | site:issuu.com | site:slideshare.net | site:academia.edu | site:researchgate.net ($permutations)'),
+        description: "Cari di platform dokumen (Scribd, Issuu, dll)",
+        category: 'Leak',
+        icon: '📚',
+      ));
+
+      // Archive & Cache
+      targets.add(OsintTarget(
+        title: "📜 Archive & Cache",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:archive.org | site:archive.is | site:web.archive.org | site:cachedview.com ($permutations)'),
+        description: "Cari di arsip dan cache web",
+        category: 'Archive',
+        icon: '📜',
+      ));
+
+      // Cloud Storage Leaks
+      targets.add(OsintTarget(
+        title: "☁️ Cloud Storage",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:drive.google.com | site:docs.google.com | site:dropbox.com | site:onedrive.live.com | site:mega.nz ($permutations)'),
+        description: "Cari di cloud storage publik",
+        category: 'Leak',
+        icon: '☁️',
+      ));
+
+      // Indonesian Forums
+      targets.add(OsintTarget(
+        title: "🇮🇩 Forum Indonesia",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:kaskus.co.id | site:brainly.co.id | site:kompasiana.com | site:detik.com ($permutations)'),
+        description: "Cari di forum dan situs Indonesia",
+        category: 'Forum ID',
+        icon: '🇮🇩',
       ));
 
       // E-commerce Indonesia
@@ -521,6 +647,46 @@ class OsintLogic {
         description: "Cari kredensial yang bocor",
         category: 'Leak',
         icon: '🔐',
+      ));
+
+      // Scribd & Document Sharing
+      targets.add(OsintTarget(
+        title: "📚 Scribd & Docs",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:scribd.com | site:id.scribd.com | site:issuu.com | site:slideshare.net | site:academia.edu | site:docdroid.net "$email"'),
+        description: "Cari di platform dokumen (Scribd, Issuu, dll)",
+        category: 'Leak',
+        icon: '📚',
+      ));
+
+      // Paste Sites Extended
+      targets.add(OsintTarget(
+        title: "📋 Paste Sites",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:pastebin.com | site:paste.ee | site:justpaste.it | site:ghostbin.com | site:hastebin.com | site:dpaste.org "$email"'),
+        description: "Cari di situs paste/dump",
+        category: 'Leak',
+        icon: '📋',
+      ));
+
+      // Cloud Storage Leaks
+      targets.add(OsintTarget(
+        title: "☁️ Cloud Storage",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:drive.google.com | site:docs.google.com | site:dropbox.com | site:onedrive.live.com "$email"'),
+        description: "Cari di cloud storage publik",
+        category: 'Leak',
+        icon: '☁️',
+      ));
+
+      // Archive Sites
+      targets.add(OsintTarget(
+        title: "📜 Archive Sites",
+        url: buildSearchUrl(SearchEngine.google, 
+          'site:archive.org | site:archive.is | site:web.archive.org "$email"'),
+        description: "Cari di arsip web",
+        category: 'Archive',
+        icon: '📜',
       ));
 
       // Document leaks
