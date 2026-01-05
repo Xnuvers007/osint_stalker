@@ -65,6 +65,14 @@ class OsintQuotes {
       author: "Sun Tzu",
     ),
     QuoteModel(
+      quote: "With great power comes great responsibility.",
+      author: "Voltaire",
+    ),
+    QuoteModel(
+      quote: "Being invisible is not about hiding, but about knowing when to be seen.",
+      author: "Anonymous",
+    ),
+    QuoteModel(
       quote: "The supreme art of war is to subdue the enemy without fighting.",
       author: "Sun Tzu",
     ),
