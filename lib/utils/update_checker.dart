@@ -79,7 +79,7 @@ class UpdateChecker {
           final packageInfo = await PackageInfo.fromPlatform();
           appVersion = packageInfo.version;
         } catch (e) {
-          appVersion = '3.0.0'; // Fallback version
+          appVersion = '3.1.0'; // Fallback version
         }
       }
 

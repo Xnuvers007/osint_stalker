@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   
   /// Check for updates from GitHub
   Future<void> _checkForUpdates({bool showNoUpdateMessage = true}) async {
-    final updateInfo = await UpdateChecker.checkForUpdate(currentVersion: '3.0.0');
+    final updateInfo = await UpdateChecker.checkForUpdate(currentVersion: '3.1.0');
     if (!mounted) return;
     
     if (updateInfo != null) {
