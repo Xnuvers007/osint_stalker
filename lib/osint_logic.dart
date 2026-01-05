@@ -21,7 +21,7 @@ class OsintLogic {
   static String _generatePermutations(String cleanPhone) {
     if (cleanPhone.length < 10) return '"$cleanPhone"';
 
-    String local = '0${cleanPhone.substring(2)}'
+    String local = '0${cleanPhone.substring(2)}';
     
     String p1 = local.substring(0, 4);
     String p2 = local.substring(4, 8);
