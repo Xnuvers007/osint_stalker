@@ -1,0 +1,42 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout repository code
+    - uses: actions/checkout@v3
+
+    # 2. Setup Java (Dibutuhkan untuk build Android)
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '12.x'
+        
+    # 3. Setup Flutter Environment
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0' # Atau versi stable terbaru
+        channel: 'stable'
+
+    # 4. Get Dependencies
+    - name: Get Dependencies
+      run: flutter pub get
+
+    # 5. Build APK (Release mode)
+    - name: Build APK
+      run: flutter build apk --release
+
+    # 6. Upload Artifact (Agar APK bisa didownload dari GitHub)
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
