@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 Text(
-                  "v3.0 PRO",
+                  "v3.1.0 by Xnuvers007",
                   style: TextStyle(
                     color: Colors.white38,
                     fontSize: 10,
