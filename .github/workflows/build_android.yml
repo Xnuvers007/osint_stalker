@@ -22,7 +22,6 @@ jobs:
         cache: true
     - run: flutter pub get
     
-    # Ambil kunci dari Secret yang tadi diupload Script Ajaib
     - name: Download Keystore
       id: android_keystore
       uses: timheuer/base64-to-file@v1.2
@@ -30,9 +29,8 @@ jobs:
         fileName: release-key.jks
         encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
-    # Build APK Resmi
     - name: Build Signed APK
-      run: flutter build apk --release --obfuscate --split-debug-info=build/debug_info
+      run: flutter clean; flutter build apk --no-tree-shake-icons --release --obfuscate --split-debug-info=build/debug_info
       env:
         ANDROID_KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
         ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}

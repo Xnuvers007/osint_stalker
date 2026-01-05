@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'osint_logic.dart';
 import 'screens/donate_screen.dart';
 import 'screens/dork_templates_screen.dart';
+import 'screens/auth_screen.dart';
 import 'utils/update_checker.dart';
 
 // Theme Colors
@@ -772,6 +773,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               UpdateChecker.showCheckingSnackBar(context);
               _checkForUpdates(showNoUpdateMessage: true);
             }),
+            _buildDrawerItem(Icons.lock_outline, 'App Lock Settings', () {
+              Navigator.pop(context);
+              _showAppLockSettings();
+            }),
             const Divider(color: Colors.white10),
             _buildDrawerItem(Icons.info_outline, 'About', () {
               Navigator.pop(context);
@@ -841,6 +846,247 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: const Text('Close', style: TextStyle(color: neonGreen)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showAppLockSettings() async {
+    final isEnabled = await AppLockManager.isAppLockEnabled();
+    final hasPin = await AppLockManager.hasPinSet();
+    final canUseBio = await AppLockManager.canUseBiometrics();
+    
+    if (!mounted) return;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: neonPurple.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.lock, color: neonPurple),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'App Lock Settings',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              
+              // App Lock Toggle
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: inputColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          hasPin ? Icons.lock : Icons.lock_open,
+                          color: isEnabled ? neonGreen : Colors.white54,
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'App Lock',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              hasPin 
+                                ? (isEnabled ? 'Aktif' : 'Nonaktif') 
+                                : 'PIN belum diatur',
+                              style: TextStyle(
+                                color: isEnabled ? neonGreen : Colors.white54,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: isEnabled && hasPin,
+                      onChanged: hasPin ? (value) async {
+                        if (value) {
+                          await AppLockManager.enableAppLock();
+                        } else {
+                          await AppLockManager.disableAppLock();
+                        }
+                        setModalState(() {});
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(
+                                    value ? Icons.lock : Icons.lock_open,
+                                    color: Colors.black,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    value ? 'App Lock diaktifkan' : 'App Lock dinonaktifkan',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: neonGreen,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      } : null,
+                      activeColor: neonGreen,
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Biometric info
+              if (canUseBio)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: neonBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: neonBlue.withOpacity(0.3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.fingerprint, color: neonBlue),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Biometric tersedia! Fingerprint/Face ID akan otomatis digunakan.',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              
+              if (!canUseBio)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: neonOrange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: neonOrange.withOpacity(0.3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: neonOrange),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Biometric tidak tersedia. Hanya PIN yang akan digunakan.',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              
+              const SizedBox(height: 16),
+              
+              // Buttons
+              Row(
+                children: [
+                  // Setup/Change PIN button
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AuthScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: neonPurple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      icon: Icon(hasPin ? Icons.edit : Icons.add),
+                      label: Text(hasPin ? 'Ubah PIN' : 'Buat PIN'),
+                    ),
+                  ),
+                  
+                  if (hasPin) ...[
+                    const SizedBox(width: 12),
+                    // Remove PIN button
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await AppLockManager.disableAppLock();
+                        if (mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Row(
+                                children: [
+                                  Icon(Icons.delete, color: Colors.white),
+                                  SizedBox(width: 10),
+                                  Text('PIN dihapus', style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                              backgroundColor: neonRed,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: neonRed.withOpacity(0.2),
+                        foregroundColor: neonRed,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('Hapus'),
+                    ),
+                  ],
+                ],
+              ),
+              
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
       ),
     );
   }
