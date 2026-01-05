@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set preferred orientations
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF0A0E1A),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+  
   runApp(const MyApp());
 }
 
@@ -17,7 +36,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         useMaterial3: true,
-        fontFamily: GoogleFonts.sourceCodePro().fontFamily, 
+        fontFamily: GoogleFonts.sourceCodePro().fontFamily,
+        scaffoldBackgroundColor: const Color(0xFF0A0E1A),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF151B2E),
+          elevation: 0,
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFF00FF94),
+          secondary: const Color(0xFF38BDF8),
+          surface: const Color(0xFF151B2E),
+          error: const Color(0xFFEF4444),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
       home: const HomeScreen(),
     );
