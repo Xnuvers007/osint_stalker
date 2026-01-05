@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         useMaterial3: true,
-        fontFamily: GoogleFonts.jetbrainsMono().fontFamily, 
+        fontFamily: GoogleFonts.sourceCodePro().fontFamily,
       ),
       home: const HomeScreen(),
     );
