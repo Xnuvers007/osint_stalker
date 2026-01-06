@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
@@ -258,267 +258,282 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           title: Row(
-          children: [
-            AnimatedBuilder(
-              animation: _pulseController,
-              builder: (context, child) {
-                return Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: neonGreen.withOpacity(0.3 + (_pulseController.value * 0.3)),
-                        blurRadius: 10 + (_pulseController.value * 10),
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.radar, color: neonGreen, size: 22),
-                );
-              },
-            ),
-            const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "OSINT STALKER",
-                  style: TextStyle(
-                    color: neonGreen,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    letterSpacing: 1,
-                  ),
-                ),
-                Text(
-                  "v3.1.0 by Xnuvers007",
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.cleaning_services_outlined, color: Colors.white54),
-            tooltip: 'Clear',
-            onPressed: () {
-              _mainController.clear();
-              _domainController.clear();
-              setState(() {
-                _results.clear();
-                _filterCategory = 'All';
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.favorite, color: neonRed),
-            tooltip: 'Donate',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DonateScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Tutorial Card
-              if (_showTutorial) _buildTutorialCard(),
-
-              // Search Type Selection
-              const Text(
-                "TIPE PENCARIAN",
-                style: TextStyle(
-                  color: Colors.white38,
-                  fontSize: 11,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildSearchTypeChip(OsintType.phone, 'Phone', Icons.phone_android),
-                    const SizedBox(width: 8),
-                    _buildSearchTypeChip(OsintType.email, 'Email', Icons.alternate_email),
-                    const SizedBox(width: 8),
-                    _buildSearchTypeChip(OsintType.username, 'Username', Icons.person_outline),
-                    const SizedBox(width: 8),
-                    _buildSearchTypeChip(OsintType.name, 'Name', Icons.badge_outlined),
-                    const SizedBox(width: 8),
-                    _buildSearchTypeChip(OsintType.domain, 'Domain', Icons.language),
-                    const SizedBox(width: 8),
-                    _buildSearchTypeChip(OsintType.ip, 'IP Address', Icons.router_outlined),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 16),
-
-              // Main Input
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [neonGreen.withOpacity(0.1), neonBlue.withOpacity(0.1)],
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: neonGreen.withOpacity(0.3)),
-                ),
-                child: TextField(
-                  controller: _mainController,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                  decoration: InputDecoration(
-                    hintText: _getHintText(),
-                    hintStyle: TextStyle(color: Colors.grey[500]),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    prefixIcon: Icon(_getTypeIcon(), color: neonGreen, size: 22),
-                    suffixIcon: IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: neonGreen,
-                          borderRadius: BorderRadius.circular(10),
+              AnimatedBuilder(
+                animation: _pulseController,
+                builder: (context, child) {
+                  return Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: neonGreen.withOpacity(0.3 + (_pulseController.value * 0.3)),
+                          blurRadius: 10 + (_pulseController.value * 10),
+                          spreadRadius: 1,
                         ),
-                        child: const Icon(Icons.search, color: Colors.black, size: 20),
-                      ),
-                      onPressed: _search,
+                      ],
+                    ),
+                    child: const Icon(Icons.radar, color: neonGreen, size: 22),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "OSINT STALKER",
+                    style: TextStyle(
+                      color: neonGreen,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      letterSpacing: 1,
                     ),
                   ),
-                  keyboardType: _getKeyboardType(),
-                  onSubmitted: (_) => _search(),
-                ),
-              ),
-              
-              const SizedBox(height: 10),
-
-              // Custom Domain Input
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: inputColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  controller: _domainController,
-                  style: const TextStyle(color: neonBlue, fontSize: 14),
-                  decoration: InputDecoration(
-                    icon: const Icon(Icons.travel_explore, color: neonBlue, size: 18),
-                    hintText: "Custom Domain (opsional, cth: linkedin.com)",
-                    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Search Engines Selection
-              const Text(
-                "SEARCH ENGINES",
-                style: TextStyle(color: Colors.white38, fontSize: 10, letterSpacing: 2),
-              ),
-              const SizedBox(height: 8),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: SearchEngine.values.map((e) => Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: _buildEngineChip(e),
-                  )).toList(),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Advanced Dorks Toggle
-              Row(
-                children: [
-                  Switch(
-                    value: _useAdvancedDorks,
-                    onChanged: (v) => setState(() => _useAdvancedDorks = v),
-                    activeColor: neonPurple,
-                  ),
-                  const Text(
-                    'Advanced Dorks (intitle, intext, inurl, filetype)',
-                    style: TextStyle(color: Colors.white54, fontSize: 11),
+                  Text(
+                    "v3.0 PRO",
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 10,
+                    ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: 10),
-
-              // Category Filter
-              if (_results.isNotEmpty) ...[
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: _categories.map((cat) {
-                      bool isSelected = _filterCategory == cat;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: GestureDetector(
-                          onTap: () => setState(() => _filterCategory = cat),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: isSelected ? neonPurple.withOpacity(0.3) : inputColor.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isSelected ? neonPurple : Colors.transparent,
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.cleaning_services_outlined, color: Colors.white54),
+              tooltip: 'Clear',
+              onPressed: () {
+                _mainController.clear();
+                _domainController.clear();
+                setState(() {
+                  _results.clear();
+                  _filterCategory = 'All';
+                });
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.favorite, color: neonRed),
+              tooltip: 'Donate',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DonateScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+        body: SafeArea(
+          // --- PERUBAHAN UTAMA DIMULAI DI SINI ---
+          // Menggunakan CustomScrollView agar seluruh halaman bisa di-scroll
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(16.0),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Tutorial Card
+                    if (_showTutorial) _buildTutorialCard(),
+        
+                    // Search Type Selection
+                    const Text(
+                      "TIPE PENCARIAN",
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 11,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildSearchTypeChip(OsintType.phone, 'Phone', Icons.phone_android),
+                          const SizedBox(width: 8),
+                          _buildSearchTypeChip(OsintType.email, 'Email', Icons.alternate_email),
+                          const SizedBox(width: 8),
+                          _buildSearchTypeChip(OsintType.username, 'Username', Icons.person_outline),
+                          const SizedBox(width: 8),
+                          _buildSearchTypeChip(OsintType.name, 'Name', Icons.badge_outlined),
+                          const SizedBox(width: 8),
+                          _buildSearchTypeChip(OsintType.domain, 'Domain', Icons.language),
+                          const SizedBox(width: 8),
+                          _buildSearchTypeChip(OsintType.ip, 'IP Address', Icons.router_outlined),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+        
+                    // Main Input
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [neonGreen.withOpacity(0.1), neonBlue.withOpacity(0.1)],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: neonGreen.withOpacity(0.3)),
+                      ),
+                      child: TextField(
+                        controller: _mainController,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        decoration: InputDecoration(
+                          hintText: _getHintText(),
+                          hintStyle: TextStyle(color: Colors.grey[500]),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          prefixIcon: Icon(_getTypeIcon(), color: neonGreen, size: 22),
+                          suffixIcon: IconButton(
+                            icon: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: neonGreen,
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              child: const Icon(Icons.search, color: Colors.black, size: 20),
                             ),
-                            child: Text(
-                              cat == 'All' ? '🎯 All (${_results.length})' : '$cat (${_results.where((r) => r.category == cat).length})',
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.white54,
-                                fontSize: 11,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              ),
-                            ),
+                            onPressed: _search,
                           ),
                         ),
-                      );
-                    }).toList(),
+                        keyboardType: _getKeyboardType(),
+                        onSubmitted: (_) => _search(),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 10),
+        
+                    // Custom Domain Input
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: inputColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _domainController,
+                        style: const TextStyle(color: neonBlue, fontSize: 14),
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.travel_explore, color: neonBlue, size: 18),
+                          hintText: "Custom Domain (opsional, cth: linkedin.com)",
+                          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+        
+                    const SizedBox(height: 12),
+        
+                    // Search Engines Selection
+                    const Text(
+                      "SEARCH ENGINES",
+                      style: TextStyle(color: Colors.white38, fontSize: 10, letterSpacing: 2),
+                    ),
+                    const SizedBox(height: 8),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: SearchEngine.values.map((e) => Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: _buildEngineChip(e),
+                        )).toList(),
+                      ),
+                    ),
+        
+                    const SizedBox(height: 12),
+        
+                    // Advanced Dorks Toggle
+                    Row(
+                      children: [
+                        Switch(
+                          value: _useAdvancedDorks,
+                          onChanged: (v) => setState(() => _useAdvancedDorks = v),
+                          activeColor: neonPurple,
+                        ),
+                        const Text(
+                          'Advanced Dorks (intitle, intext, inurl, filetype)',
+                          style: TextStyle(color: Colors.white54, fontSize: 11),
+                        ),
+                      ],
+                    ),
+        
+                    const SizedBox(height: 10),
+        
+                    // Category Filter
+                    if (_results.isNotEmpty) ...[
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _categories.map((cat) {
+                            bool isSelected = _filterCategory == cat;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: GestureDetector(
+                                onTap: () => setState(() => _filterCategory = cat),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? neonPurple.withOpacity(0.3) : inputColor.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isSelected ? neonPurple : Colors.transparent,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    cat == 'All' ? '🎯 All (${_results.length})' : '$cat (${_results.where((r) => r.category == cat).length})',
+                                    style: TextStyle(
+                                      color: isSelected ? Colors.white : Colors.white54,
+                                      fontSize: 11,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ]),
+                ),
+              ),
+        
+              // Results Section (Menggunakan SliverList atau SliverToBoxAdapter)
+              if (_results.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = _filteredResults[index];
+                        return _buildResultCard(item, index);
+                      },
+                      childCount: _filteredResults.length,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-              ],
-              
-              // Results
-              Expanded(
-                child: _results.isEmpty 
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: _filteredResults.length,
-                    itemBuilder: (context, index) {
-                      final item = _filteredResults[index];
-                      return _buildResultCard(item, index);
-                    },
-                  ),
-              ),
+                
+              // Tambahan padding bawah agar tidak tertutup navbar (jika ada)
+              const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
             ],
           ),
         ),
       ),
-    ),
     );
   }
-
+  
   Widget _buildTutorialCard() {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -715,85 +730,100 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildDrawer() {
+Widget _buildDrawer() {
     return Drawer(
       backgroundColor: cardColor,
       child: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [neonGreen.withOpacity(0.2), neonBlue.withOpacity(0.2)],
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: neonGreen.withOpacity(0.2),
-                      shape: BoxShape.circle,
+        // --- PERBAIKAN: Gunakan CustomScrollView agar bisa di-scroll ---
+        child: CustomScrollView(
+          slivers: [
+            // Bagian Menu (Header & Item List)
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [neonGreen.withOpacity(0.2), neonBlue.withOpacity(0.2)],
                     ),
-                    child: const Icon(Icons.radar, color: neonGreen, size: 30),
                   ),
-                  const SizedBox(width: 16),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        'OSINT STALKER',
-                        style: TextStyle(
-                          color: neonGreen,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: neonGreen.withOpacity(0.2),
+                          shape: BoxShape.circle,
                         ),
+                        child: const Icon(Icons.radar, color: neonGreen, size: 30),
                       ),
-                      Text(
-                        'by Xnuvers007',
-                        style: TextStyle(color: Colors.white54, fontSize: 12),
+                      const SizedBox(width: 16),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'OSINT STALKER',
+                            style: TextStyle(
+                              color: neonGreen,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            'by Xnuvers007',
+                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                const Divider(color: Colors.white10),
+                _buildDrawerItem(Icons.home_outlined, 'Home', () => Navigator.pop(context)),
+                _buildDrawerItem(Icons.code, 'Dork Templates', () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const DorkTemplatesScreen()));
+                }),
+                _buildDrawerItem(Icons.favorite_outline, 'Donate / Support', () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const DonateScreen()));
+                }),
+                _buildDrawerItem(Icons.system_update, 'Check Update', () {
+                  Navigator.pop(context);
+                  UpdateChecker.showCheckingSnackBar(context);
+                  _checkForUpdates(showNoUpdateMessage: true);
+                }),
+                _buildDrawerItem(Icons.lock_outline, 'App Lock Settings', () {
+                  Navigator.pop(context);
+                  _showAppLockSettings();
+                }),
+                _buildDrawerItem(Icons.notifications_outlined, 'Notification Settings', () {
+                  Navigator.pop(context);
+                  _showNotificationSettings();
+                }),
+                const Divider(color: Colors.white10),
+                _buildDrawerItem(Icons.info_outline, 'About', () {
+                  Navigator.pop(context);
+                  _showAboutDialog();
+                }),
+              ]),
             ),
-            const Divider(color: Colors.white10),
-            _buildDrawerItem(Icons.home_outlined, 'Home', () => Navigator.pop(context)),
-            _buildDrawerItem(Icons.code, 'Dork Templates', () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const DorkTemplatesScreen()));
-            }),
-            _buildDrawerItem(Icons.favorite_outline, 'Donate / Support', () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const DonateScreen()));
-            }),
-            _buildDrawerItem(Icons.system_update, 'Check Update', () {
-              Navigator.pop(context);
-              UpdateChecker.showCheckingSnackBar(context);
-              _checkForUpdates(showNoUpdateMessage: true);
-            }),
-            _buildDrawerItem(Icons.lock_outline, 'App Lock Settings', () {
-              Navigator.pop(context);
-              _showAppLockSettings();
-            }),
-            _buildDrawerItem(Icons.notifications_outlined, 'Notification Settings', () {
-              Navigator.pop(context);
-              _showNotificationSettings();
-            }),
-            const Divider(color: Colors.white10),
-            _buildDrawerItem(Icons.info_outline, 'About', () {
-              Navigator.pop(context);
-              _showAboutDialog();
-            }),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                '© 2026 Xnuvers007\nAll Rights Reserved',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[700], fontSize: 11),
+
+            // Bagian Footer (Copyright) - Otomatis menyesuaikan posisi
+            SliverFillRemaining(
+              hasScrollBody: false, // Penting! Agar Spacer() bekerja dengan benar
+              child: Column(
+                children: [
+                  const Spacer(), // Mendorong text ke paling bawah
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      '© 2026 Xnuvers007\nAll Rights Reserved',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[700], fontSize: 11),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -801,7 +831,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
+  
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.white54),
